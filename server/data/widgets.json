@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "type": "stock",
+    "size": "medium",
+    "title": "Stock Prices",
+    "data": [
+      { "ticker": "AAPL", "price": 189.50, "change": "+1.2%" },
+      { "ticker": "GOOGL", "price": 141.80, "change": "-0.5%" },
+      { "ticker": "TSLA", "price": 242.10, "change": "+3.1%" },
+      { "ticker": "MSFT", "price": 378.90, "change": "+0.8%" }
+    ]
+  },
+  {
+    "id": 2,
+    "type": "news",
+    "size": "large",
+    "title": "Daily News",
+    "data": [
+      { "headline": "AI reaches new milestone in reasoning tasks", "source": "TechCrunch", "url": "https://techcrunch.com" },
+      { "headline": "Markets rally on Fed interest rate news", "source": "Reuters", "url": "https://reuters.com" },
+      { "headline": "New JavaScript framework released for edge computing", "source": "Dev.to", "url": "https://dev.to" },
+      { "headline": "Open source project hits 100k GitHub stars", "source": "GitHub Blog", "url": "https://github.blog" }
+    ]
+  }
+]

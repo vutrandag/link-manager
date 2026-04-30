@@ -1,0 +1,10 @@
+[
+  { "id": 1, "order": 1, "title": "GitHub", "description": "Code repository and version control", "image": "https://github.githubassets.com/favicons/favicon.png", "url": "https://github.com", "favorite": false },
+  { "id": 2, "order": 2, "title": "Figma", "description": "Design and prototyping tool", "image": "https://static.figma.com/app/icon/1/favicon.png", "url": "https://figma.com", "favorite": true },
+  { "id": 3, "order": 3, "title": "Linear", "description": "Project management for teams", "image": "https://linear.app/favicon.ico", "url": "https://linear.app", "favorite": false },
+  { "id": 4, "order": 4, "title": "Notion", "description": "All-in-one workspace", "image": "https://www.notion.so/front-static/favicon.ico", "url": "https://notion.so", "favorite": true },
+  { "id": 5, "order": 5, "title": "Vercel", "description": "Frontend deployment platform", "image": "https://vercel.com/favicon.ico", "url": "https://vercel.com", "favorite": false },
+  { "id": 6, "order": 6, "title": "Slack", "description": "Team messaging and collaboration", "image": "https://slack.com/favicon.ico", "url": "https://slack.com", "favorite": false },
+  { "id": 7, "order": 7, "title": "Google Drive", "description": "Cloud storage and collaboration", "image": "https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png", "url": "https://drive.google.com", "favorite": true },
+  { "id": 8, "order": 8, "title": "Jira", "description": "Issue and project tracking", "image": "https://jira.atlassian.com/favicon.ico", "url": "https://jira.atlassian.com", "favorite": false }
+]
