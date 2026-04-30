@@ -21,18 +21,28 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use(new GoogleStrategy({
-  clientID: config.GOOGLE_CLIENT_ID,
-  clientSecret: config.GOOGLE_CLIENT_SECRET,
-  callbackURL: '/auth/google/callback'
-}, (accessToken, refreshToken, profile, done) => {
-  return done(null, profile);
-}));
+if (config.TEST_MODE) {
+  console.log('⚠️  TEST MODE enabled — authentication is bypassed');
+} else {
+  passport.use(new GoogleStrategy({
+    clientID: config.GOOGLE_CLIENT_ID,
+    clientSecret: config.GOOGLE_CLIENT_SECRET,
+    callbackURL: '/auth/google/callback'
+  }, (accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
+  }));
+}
 
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));
 
+const TEST_USER = { displayName: 'Test User', photos: [], emails: [{ value: 'test@example.com' }] };
+
 function requireAuth(req, res, next) {
+  if (config.TEST_MODE) {
+    req.user = req.user || TEST_USER;
+    return next();
+  }
   if (req.isAuthenticated()) return next();
   res.redirect('/login');
 }
@@ -51,7 +61,7 @@ app.get('/auth/logout', (req, res) => {
 
 // Login page
 app.get('/login', (req, res) => {
-  if (req.isAuthenticated()) return res.redirect('/');
+  if (config.TEST_MODE || req.isAuthenticated()) return res.redirect('/');
   res.sendFile(path.join(__dirname, '../public/login.html'));
 });
 

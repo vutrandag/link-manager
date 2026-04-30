@@ -107,6 +107,17 @@ Click **Sign out** in the top-right header.
 | `GOOGLE_CLIENT_ID` | — | Google OAuth Client ID |
 | `GOOGLE_CLIENT_SECRET` | — | Google OAuth Client Secret |
 | `SESSION_SECRET` | — | Secret used to sign session cookies |
+| `TEST_MODE` | `false` | Set to `true` to bypass authentication (no Google credentials needed) |
+
+### Test mode
+
+Set `TEST_MODE=true` in `.env` to skip Google OAuth entirely. All protected routes will be accessible immediately and a mock "Test User" will be injected as the signed-in user. Useful for local development before setting up Google credentials.
+
+```env
+TEST_MODE=true
+```
+
+> ⚠️ Never enable `TEST_MODE` in production.
 
 ## Customising Data
 

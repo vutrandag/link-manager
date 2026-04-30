@@ -6,4 +6,5 @@ module.exports = {
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   SESSION_SECRET: process.env.SESSION_SECRET || 'dev-secret',
+  TEST_MODE: process.env.TEST_MODE === 'true',
 };
