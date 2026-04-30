@@ -24,27 +24,27 @@ function toggleTheme() {
 
 // ===== RENDER FUNCTIONS =====
 function renderLinkCard(link) {
-  const card = document.createElement('div');
+  const card = document.createElement('a');
   card.className = 'card';
+  card.href = link.url;
+  card.target = '_blank';
+  card.rel = 'noopener noreferrer';
   card.dataset.id = link.id;
-
   card.innerHTML = `
+    <div class="card-bg${link.background ? '' : ' card-bg--plain'}" style="background-image: url('${link.background || link.image}')"></div>
     <div class="card-header">
-      <div class="card-image-wrap">
-        <img class="card-image" src="${link.image}" alt="${link.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2248%22 height=%2248%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23999%22 stroke-width=%222%22><rect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%222%22/><path d=%22M9 9h6M9 12h6M9 15h4%22/></svg>'" />
-        <span class="card-order">${link.order}</span>
-      </div>
+      <img class="card-image" src="${link.image}" alt="${link.title}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2248%22 height=%2248%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23999%22 stroke-width=%222%22><rect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%222%22/><path d=%22M9 9h6M9 12h6M9 15h4%22/></svg>'" />
       <button class="card-favorite ${link.favorite ? 'active' : ''}" data-id="${link.id}" aria-label="Toggle favorite">
         ${link.favorite ? '★' : '☆'}
       </button>
     </div>
     <div class="card-title">${link.title}</div>
     <div class="card-description">${link.description}</div>
-    <a href="${link.url}" target="_blank" rel="noopener noreferrer" class="card-cta">Open →</a>
   `;
 
   card.querySelector('.card-favorite').addEventListener('click', (e) => {
     e.preventDefault();
+    e.stopPropagation();
     const btn = e.currentTarget;
     const isActive = btn.classList.toggle('active');
     btn.textContent = isActive ? '★' : '☆';
@@ -96,9 +96,27 @@ function renderNewsWidget(widget) {
 }
 
 function renderWidget(widget) {
-  if (widget.type === 'stock') return renderStockWidget(widget);
   if (widget.type === 'news') return renderNewsWidget(widget);
   return null;
+}
+
+function renderHeaderStocks(stocks) {
+  const container = document.getElementById('headerStocks');
+  if (!container || !stocks.length) return;
+  container.innerHTML = stocks.map(item => {
+    const isPositive = item.change.startsWith('+');
+    const isNegative = item.change.startsWith('-');
+    const changeClass = isPositive ? 'positive' : isNegative ? 'negative' : 'neutral';
+    return `
+      <div class="header-stock-item">
+        <div class="header-stock-top">
+          <span class="header-stock-ticker">${item.ticker}</span>
+          <span class="header-stock-price">$${Number(item.price).toFixed(2)}</span>
+        </div>
+        <div class="header-stock-change ${changeClass}">${item.change}</div>
+      </div>
+    `;
+  }).join('');
 }
 
 // ===== DATA FETCHING & RENDERING =====
@@ -120,11 +138,19 @@ async function fetchAndRender() {
     const grid = document.getElementById('grid');
     grid.innerHTML = '';
 
-    // Render link cards
-    links.forEach(link => grid.appendChild(renderLinkCard(link)));
+    // Render link cards — favorites first, then by order
+    const sorted = [...links].sort((a, b) => {
+      if (b.favorite !== a.favorite) return b.favorite ? 1 : -1;
+      return a.order - b.order;
+    });
+    sorted.forEach(link => grid.appendChild(renderLinkCard(link)));
 
-    // Render widgets
-    widgets.forEach(widget => {
+    // Render stock tickers in header
+    const allStocks = widgets.filter(w => w.type === 'stock').flatMap(w => w.data);
+    renderHeaderStocks(allStocks);
+
+    // Render non-stock widgets in grid
+    widgets.filter(w => w.type !== 'stock').forEach(widget => {
       const el = renderWidget(widget);
       if (el) grid.appendChild(el);
     });
@@ -135,41 +161,31 @@ async function fetchAndRender() {
 
 // ===== AUTO-REFRESH =====
 let refreshInterval = 5000;
-let countdown = 5;
-let countdownTimer = null;
 let refreshTimer = null;
+let updateCount = 0;
 
-function updateRefreshLabel() {
+function updateRefreshLabel(isRefreshing = false) {
   const label = document.getElementById('refreshLabel');
   const dot = document.querySelector('.refresh-dot');
-  if (label) label.textContent = `Refreshing in ${countdown}s`;
-  if (countdown <= 0) {
-    if (dot) dot.classList.add('refreshing');
-  } else {
-    if (dot) dot.classList.remove('refreshing');
+  const intervalSec = Math.round(refreshInterval / 1000);
+  if (label) label.textContent = `auto-refresh every ${intervalSec}s · ${updateCount} updates`;
+  if (dot) {
+    if (isRefreshing) dot.classList.add('refreshing');
+    else dot.classList.remove('refreshing');
   }
 }
 
 function startRefreshLoop(interval) {
   refreshInterval = interval;
-  countdown = Math.round(interval / 1000);
-
-  clearInterval(countdownTimer);
   clearTimeout(refreshTimer);
-
-  countdownTimer = setInterval(() => {
-    countdown--;
-    if (countdown < 0) countdown = 0;
-    updateRefreshLabel();
-  }, 1000);
+  updateRefreshLabel();
 
   function scheduleRefresh() {
     refreshTimer = setTimeout(async () => {
-      countdown = 0;
-      updateRefreshLabel();
+      updateRefreshLabel(true);
       await fetchAndRender();
-      countdown = Math.round(refreshInterval / 1000);
-      updateRefreshLabel();
+      updateCount++;
+      updateRefreshLabel(false);
       scheduleRefresh();
     }, interval);
   }

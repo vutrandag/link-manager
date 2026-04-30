@@ -15,12 +15,9 @@
       </svg>
       <span class="header-title">Link Manager</span>
     </div>
-    <div class="header-center">
-      <div class="refresh-indicator" id="refreshIndicator">
-        <span class="refresh-dot"></span>
-        <span class="refresh-label" id="refreshLabel">Refreshing in 5s</span>
-      </div>
-    </div>
+
+    <div class="header-stocks" id="headerStocks"></div>
+
     <div class="header-right">
       <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
         <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -46,6 +43,13 @@
       <div class="loading">Loading your links...</div>
     </div>
   </main>
+
+  <footer class="status-bar">
+    <div class="refresh-indicator" id="refreshIndicator">
+      <span class="refresh-dot"></span>
+      <span class="refresh-label" id="refreshLabel">auto-refresh every 5s · 0 updates</span>
+    </div>
+  </footer>
 
   <script src="/app.js"></script>
 </body>
